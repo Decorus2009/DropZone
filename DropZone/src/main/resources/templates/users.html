@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div class="container">
+    <div th:if="${not #lists.isEmpty(users)}">
+        <h2>User list</h2>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Login</th>
+                <th>Token</th>
+                <th>Unique Key</th>
+                <th>Directory</th>
+            </tr>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.login}"></td>
+                <td th:text="${user.token}"></td>
+                <td th:text="${user.uniqueKey}"></td>
+                <td th:text="${user.directory}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
