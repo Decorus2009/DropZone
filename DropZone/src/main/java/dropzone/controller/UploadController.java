@@ -14,6 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 // TODO обработать ограничение на повторное добавление одного и того же uniqueKey
+
+/**
+ * Контроллер для обработки запросов на загрузку файлов и отображение текущих пользователей в БД
+ */
 @Controller
 public class UploadController {
 

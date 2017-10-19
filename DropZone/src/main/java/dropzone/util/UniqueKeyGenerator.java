@@ -8,8 +8,9 @@ public class UniqueKeyGenerator {
     private static final String digits = "0123456789";
     private static final Random random = new Random();
     private static final char[] buffer = new char[10];
+
     /**
-     * Generate a random string.
+     * Генерит рандомный буквенно-цифровой 10-символьный uniqueKey
      */
     public static String nextKey() {
         for (int i = 0; i < buffer.length; ++i) {
