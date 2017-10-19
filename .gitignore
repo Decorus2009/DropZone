@@ -1,4 +1,5 @@
-./**/.DS_Store
-Spring Boot File Upload/.idea/
-Spring Boot File Upload/target/
-Spring Boot File Upload/SpringBootFileUpload.iml
+**/.DS_Store
+**/.idea
+**/target/
+**/*.iml
+**/upload
