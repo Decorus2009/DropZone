@@ -28,4 +28,9 @@ public class YandexDiskFile {
     public YandexDiskFile getParent() {
         return newInstance(path.getParent().toString(), true);
     }
+
+    @Override
+    public String toString() {
+        return path.toString();
+    }
 }

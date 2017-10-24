@@ -17,7 +17,7 @@ public class FileSystemStorageService implements StorageService {
     private final Path rootLocation;
 
     public FileSystemStorageService() {
-        rootLocation = Paths.get("upload");
+        rootLocation = Paths.get("upload_tmp");
     }
 
 
@@ -32,8 +32,8 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file) {
-        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+    public Path store(final MultipartFile file) {
+        final String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty filesystem " + filename);
@@ -46,6 +46,8 @@ public class FileSystemStorageService implements StorageService {
             }
             Files.copy(file.getInputStream(), rootLocation.resolve(filename),
                     StandardCopyOption.REPLACE_EXISTING);
+
+            return Paths.get(rootLocation.toString(), filename);
         } catch (IOException e) {
             throw new StorageException("Failed to store filesystem " + filename, e);
         }

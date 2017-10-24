@@ -9,6 +9,7 @@ import com.yandex.disk.rest.exceptions.ServerIOException;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,7 +49,10 @@ public class YandexDisk {
 
     public boolean upload(final Path filePath, final Path yandexDiskPath) throws ServerException, IOException {
         if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
-            final Link uploadLink = client.getUploadLink(yandexDiskPath.toAbsolutePath().toString(), false);
+            // с toAbsolutePath() не работает
+//            final Link uploadLink = client.getUploadLink(yandexDiskPath.toAbsolutePath().toString(), false);
+
+            final Link uploadLink = client.getUploadLink(yandexDiskPath.toString(), false);
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {

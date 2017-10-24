@@ -1,11 +1,16 @@
 package dropzone.controller;
 
-import dropzone.repository.YandexDiskUser;
-import dropzone.repository.YandexDiskUserService;
+import com.yandex.disk.rest.exceptions.ServerException;
+import dropzone.repository.entity.UploadDirectory;
+import dropzone.repository.entity.UserLogin;
+import dropzone.repository.service.UploadDirectoryService;
+import dropzone.repository.service.UserLoginService;
 import dropzone.storage.StorageService;
+import dropzone.yandex.YandexDisk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,50 +18,66 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-// TODO обработать ограничение на повторное добавление одного и того же uniqueKey
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-/**
- * Контроллер для обработки запросов на загрузку файлов и отображение текущих пользователей в БД
- */
 @Controller
 public class UploadController {
 
     private final StorageService storageService;
-    private final YandexDiskUserService userService;
+    private final UploadDirectoryService uploadDirectoryService;
+    private final UserLoginService userLoginService;
 
     @Autowired
-    public UploadController(StorageService storageService, YandexDiskUserService userService) {
+    public UploadController(UploadDirectoryService uploadDirectoryService, UserLoginService userLoginService,
+                            StorageService storageService) {
         this.storageService = storageService;
-        this.userService = userService;
+        this.uploadDirectoryService = uploadDirectoryService;
+        this.userLoginService = userLoginService;
     }
 
     @GetMapping("/upload/{uniqueKey}")
-    public String singleFileUploadIndex(@PathVariable String uniqueKey, Model model) {
-        model.addAttribute(uniqueKey);
+    public String singleFileUpload(@PathVariable final String uniqueKey, final Model model) {
+        model.addAttribute("uniqueKey", uniqueKey);
+        final UploadDirectory uploadDirectory = uploadDirectoryService.findBy(uniqueKey);
+        model.addAttribute("uniqueKeyFound", uploadDirectory != null);
         return "upload";
     }
 
     @PostMapping("/upload/{uniqueKey}")
-    public String singleFileUpload(@PathVariable String uniqueKey, @RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
-        /* store file in the file system */
-        storageService.store(file);
-        /* update database */
-        userService.saveOrUpdate(new YandexDiskUser("thisUser", "token", uniqueKey, "upload"));
+    public String singleFileUpload(@PathVariable final String uniqueKey, @RequestParam("file") final MultipartFile file,
+                                   final RedirectAttributes redirectAttributes) {
+        final UploadDirectory yandexDiskUploadDirectory = uploadDirectoryService.findBy(uniqueKey);
+        final UserLogin userLogin = yandexDiskUploadDirectory.getUserLogin();
+
+        final String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        /*
+        Put file into temporary storage first,
+        because RestClient.uploadFile accepts file only as a local source.
+        */
+        final Path filePath = storageService.store(file);
+        final Path yandexDiskPath = Paths.get(yandexDiskUploadDirectory.getDirectory() + filename);
+
+        final String login = userLogin.getLogin();
+        final String token = userLogin.getToken();
+        boolean uploadResult = false;
+
+        try {
+            uploadResult = new YandexDisk(login, token).upload(filePath, yandexDiskPath);
+        } catch (ServerException | IOException e) {
+            e.printStackTrace();
+        }
 
         redirectAttributes
-                .addFlashAttribute("message", "File \"" + file.getOriginalFilename() + "\" has been uploaded");
+                .addFlashAttribute("yandexDiskPath", yandexDiskUploadDirectory.getDirectory())
+                .addFlashAttribute("fileName", filename)
+                .addFlashAttribute("uploadResult", uploadResult);
         return "redirect:/uploadStatus";
     }
 
     @GetMapping("/uploadStatus")
     public String uploadStatus() {
         return "uploadStatus";
-    }
-
-    @GetMapping("/users")
-    public String YandexDiskUsers(Model model) {
-        model.addAttribute("users", userService.listAll());
-        return "users";
     }
 }

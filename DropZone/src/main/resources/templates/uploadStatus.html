@@ -2,8 +2,15 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<div th:if="${message}">
-    <h1 th:text="${message}"/>
+<div>
+    <h1>Upload result</h1>
+</div>
+
+<div th:if="${uploadResult}">
+    <h2 th:text="@{You successfully uploaded __${fileName}__ to __${yandexDiskPath}__ directory at your Yandex.Disk}"></h2>
+</div>
+<div th:unless="${uploadResult}">
+    <h2 th:text="@{Unable to upload __${fileName}__ to __${yandexDiskPath}__ directory at your Yandex.Disk}"></h2>
 </div>
 
 </body>
