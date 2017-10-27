@@ -4,14 +4,14 @@
 <h2>yandex disk</h2>
 
 <form method="GET" action="/yandexDiskFileList" enctype="multipart/form-data">
-    <button th:value="${currentPath} + '/..'" name="path">..</button>
+    <button th:value="${currentPath.getParent().getPath()}" name="path">..</button>
 </form>
 <table class="table table-striped">
     <tr>
         <th>file name</th>
     </tr>
     <tr th:each="file : ${files}">
-        <td th:text="${file.getPath().getFileName()}"></td>
+        <td th:text="${file.getFileName()}"></td>
         <td>
             <form method="GET" action="/yandexDiskFileList" enctype="multipart/form-data">
                 <button th:value="${file.getPath()}"

@@ -57,7 +57,7 @@ public class UploadController {
         because RestClient.uploadFile accepts file only as a local source.
         */
         final Path filePath = storageService.store(file);
-        final Path yandexDiskPath = Paths.get(yandexDiskUploadDirectory.getDirectory() + filename);
+        final String yandexDiskPath = yandexDiskUploadDirectory.getDirectory() + filename;
 
         final String login = userLogin.getLogin();
         final String token = userLogin.getToken();

@@ -9,7 +9,6 @@ import com.yandex.disk.rest.exceptions.ServerIOException;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,8 +21,8 @@ public class YandexDisk {
 
     private static final Logger LOG = Logger.getLogger(YandexDisk.class.getSimpleName());
 
-    private static final String DEBUG_TOKEN = "token";
     private static final String DEBUG_LOGIN = "login";
+    private static final String DEBUG_TOKEN = "token";
 
     private final RestClient client;
 
@@ -35,7 +34,7 @@ public class YandexDisk {
         client = new RestClient(new Credentials(login, token));
     }
 
-    public List<YandexDiskFile> getDiskContent(final String path) throws IOException, ServerIOException {
+    public List<YandexDiskPath> getDiskContent(final String path) throws IOException, ServerIOException {
         final Resource resource = client.getResources(new ResourcesArgs.Builder().setPath(path).build());
         if (resource.getResourceList() == null) {
             return Collections.emptyList();
@@ -43,16 +42,13 @@ public class YandexDisk {
         return resource.getResourceList()
                 .getItems()
                 .stream()
-                .map(file -> YandexDiskFile.newInstance(file.getPath().getPath(), file.isDir()))
+                .map(file -> YandexDiskPath.newInstance(file.getPath().getPath(), file.isDir()))
                 .collect(Collectors.toList());
     }
 
-    public boolean upload(final Path filePath, final Path yandexDiskPath) throws ServerException, IOException {
+    public boolean upload(final Path filePath, final String yandexDiskPath) throws ServerException, IOException {
         if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
-            // с toAbsolutePath() не работает
-//            final Link uploadLink = client.getUploadLink(yandexDiskPath.toAbsolutePath().toString(), false);
-
-            final Link uploadLink = client.getUploadLink(yandexDiskPath.toString(), false);
+            final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
