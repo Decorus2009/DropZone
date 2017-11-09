@@ -16,13 +16,16 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
+    // добавить лимит в базу, сколько еще можно загрузить
+    // выбрать папку, генерится uniqueKey, и в базу
+    // дефолтный лимит на папку пока - 1 Гб, проверять, что место есть
     @Bean
     CommandLineRunner init(UserLoginService userLoginService, UploadDirectoryService uploadDirectoryService,
                            StorageService storageService) {
         return (args) -> {
             UserLogin userLogin = new UserLogin();
             userLogin.setLogin("DropZoneCSC");
-            userLogin.setToken("AQAAAAAhTokfAASbsJGzj3ck2kDIhsnFw4FtY_Q");
+            userLogin.setToken("AQAAAAAhTokfAASbsG42yYhb0UPfsXhGA2BEiws");
 
             UploadDirectory uploadDirectory = new UploadDirectory();
             uploadDirectory.setUniqueKey("1a2b3c4d5e");
