@@ -61,7 +61,7 @@ $(document).ready(function() {
 
 			var infoObject = objectArray[i];
 
-			for ( var infoKey in infoObject) {
+			for (var infoKey in infoObject) {
 				if (infoObject.hasOwnProperty(infoKey)) {
 					responseContent = responseContent + " " + infoKey + " -> " + infoObject[infoKey] + "<br>";
 				}

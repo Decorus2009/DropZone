@@ -30,6 +30,7 @@ public class Application {
             UploadDirectory uploadDirectory = new UploadDirectory();
             uploadDirectory.setUniqueKey("1a2b3c4d5e");
             uploadDirectory.setDirectory("disk:/");
+            uploadDirectory.setByteLimit(1_073_741_824L);
 
             userLogin.setUploadDirectory(uploadDirectory);
             uploadDirectory.setUserLogin(userLogin);

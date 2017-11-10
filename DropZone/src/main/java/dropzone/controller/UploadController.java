@@ -14,11 +14,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Path;
+
 
 @Controller
 public class UploadController {
@@ -34,6 +36,17 @@ public class UploadController {
         this.uploadDirectoryService = uploadDirectoryService;
         this.userLoginService = userLoginService;
     }
+
+/*
+    // для отладки
+    // этот атрибут хорошо распознается в test.html через thymeleaf, можно с ним оперировать
+    @GetMapping("/test/{name}")
+    public String test(@PathVariable final String name, final Model model) {
+        model.addAttribute("name", name);
+        return "test";
+    }
+*/
+
 
     /**
      * GET method for /upload/{uniqueKey}
@@ -63,35 +76,19 @@ public class UploadController {
                                    final RedirectAttributes redirectAttributes) {
 
         final UploadDirectory yandexDiskUploadDirectory = uploadDirectoryService.findBy(uniqueKey);
-        final UserLogin userLogin = yandexDiskUploadDirectory.getUserLogin();
 
         // Getting uploaded files from the request object
-        request.getFileMap().values().forEach(file -> {
-
-            final String filename = StringUtils.cleanPath(file.getOriginalFilename());
-            /*
-            Put file into temporary storage first,
-            because RestClient.uploadFile accepts file only as a local source.
-            */
-            final Path filePath = storageService.store(file);
-            final String yandexDiskPath = yandexDiskUploadDirectory.getDirectory() + filename;
-
-            final String login = userLogin.getLogin();
-            final String token = userLogin.getToken();
-            boolean uploadResult = false;
-
-            try {
-                uploadResult = new YandexDisk(login, token).upload(filePath, yandexDiskPath);
-            } catch (ServerException | IOException e) {
-                e.printStackTrace();
-            }
+        for (MultipartFile file : request.getFileMap().values()) {
+            UploadResult uploadResult = uploadTo(yandexDiskUploadDirectory, file);
 
             redirectAttributes
-                    .addFlashAttribute("yandexDiskPath", yandexDiskUploadDirectory.getDirectory())
-                    .addFlashAttribute("fileName", filename)
-                    .addFlashAttribute("uploadResult", uploadResult);
-        });
+                    .addFlashAttribute("uploadSuccess", uploadResult.getStatus() == UploadStatus.SUCCESS)
+                    .addFlashAttribute("uploadResultMessage", uploadResult.getMessage());
 
+            if (uploadResult.getStatus() == UploadStatus.FAILURE) {
+                break;
+            }
+        }
         return "redirect:/uploadStatus";
     }
 
@@ -103,5 +100,43 @@ public class UploadController {
     @GetMapping("/uploadStatus")
     public String uploadStatus() {
         return "uploadStatus";
+    }
+
+
+    private UploadResult uploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file) {
+        if (!hasEnoughSpaceToUploadTo(yandexDiskUploadDirectory, file)) {
+            return new UploadResult(UploadStatus.FAILURE, "Not enough space to upload file: " + file.getOriginalFilename() + "\n");
+        }
+
+        final UserLogin userLogin = yandexDiskUploadDirectory.getUserLogin();
+        final String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        /*
+        Put file into temporary storage first,
+        because RestClient.uploadFile accepts file only as a local source.
+        */
+        final Path localFilePath = storageService.store(file);
+        final String yandexDiskPath = yandexDiskUploadDirectory.getDirectory() + filename;
+
+        final String login = userLogin.getLogin();
+        final String token = userLogin.getToken();
+
+        boolean uploadResult;
+        try {
+            uploadResult = new YandexDisk(login, token).upload(localFilePath, yandexDiskPath);
+        } catch (ServerException | IOException e) {
+            e.printStackTrace();
+            // TODO handle error
+            return new UploadResult(UploadStatus.FAILURE, e.getMessage());
+        }
+
+        if (uploadResult) {
+            return new UploadResult(UploadStatus.SUCCESS, "File(s) uploaded\n");
+        } else {
+            return new UploadResult(UploadStatus.FAILURE, "Cannot upload file: " + file.getOriginalFilename() + "\n");
+        }
+    }
+
+    private boolean hasEnoughSpaceToUploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file) {
+        return yandexDiskUploadDirectory.getByteLimit() >= file.getSize();
     }
 }
