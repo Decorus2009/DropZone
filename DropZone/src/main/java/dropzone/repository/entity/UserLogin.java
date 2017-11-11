@@ -1,6 +1,8 @@
 package dropzone.repository.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_login")
@@ -11,17 +13,17 @@ public class UserLogin implements RelationEntity {
     private String login;
     @Column(unique = true, nullable = false)
     private String token;
-    @OneToOne(mappedBy = "userLogin")
-    private UploadDirectory uploadDirectory;
+    @OneToMany(mappedBy = "userLogin")
+    private Set<UploadDirectory> uploadDirectories = new HashSet<>();
 
 
     public UserLogin() {
     }
 
-    public UserLogin(String login, String token, UploadDirectory uploadDirectory) {
+    public UserLogin(String login, String token, Set<UploadDirectory> uploadDirectories) {
         this.login = login;
         this.token = token;
-        this.uploadDirectory = uploadDirectory;
+        this.uploadDirectories = uploadDirectories;
     }
 
     public String getLogin() {
@@ -40,11 +42,15 @@ public class UserLogin implements RelationEntity {
         this.token = token;
     }
 
-    public UploadDirectory getUploadDirectory() {
-        return uploadDirectory;
+    public Set<UploadDirectory> getUploadDirectories() {
+        return uploadDirectories;
     }
 
-    public void setUploadDirectory(final UploadDirectory uploadDirectory) {
-        this.uploadDirectory = uploadDirectory;
+    public void setUploadDirectories(final Set<UploadDirectory> uploadDirectories) {
+        this.uploadDirectories = uploadDirectories;
+    }
+
+    public void addUploadDirectory(final UploadDirectory uploadDirectory) {
+        uploadDirectories.add(uploadDirectory);
     }
 }

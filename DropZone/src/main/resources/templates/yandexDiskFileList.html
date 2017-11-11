@@ -6,7 +6,7 @@
 <form method="GET" action="/yandexDiskFileList" enctype="multipart/form-data">
     <button th:value="${currentPath.getParent().getPath()}" name="path">..</button>
 </form>
-<table class="table table-striped">
+<table class="table table-bordered">
     <tr>
         <th>file name</th>
     </tr>
@@ -18,6 +18,15 @@
                         name="path"
                         th:disabled="${file.isDirectory()} == false">
                     open
+                </button>
+            </form>
+        </td>
+        <td>
+            <form method="GET" action="/yandexDiskFileList/shareDir" enctype="multipart/form-data">
+                <button th:value="${file.getPath()}"
+                        name="path"
+                        th:disabled="${file.isDirectory()} == false">
+                    share
                 </button>
             </form>
         </td>

@@ -22,17 +22,17 @@ public class Application {
         return (args) -> {
             UserLogin userLogin = new UserLogin();
             userLogin.setLogin("DropZoneCSC");
-            userLogin.setToken("AQAAAAAhTokfAASbsJGzj3ck2kDIhsnFw4FtY_Q");
+            userLogin.setToken("token");
 
             UploadDirectory uploadDirectory = new UploadDirectory();
             uploadDirectory.setUniqueKey("1a2b3c4d5e");
             uploadDirectory.setDirectory("disk:/");
 
-            userLogin.setUploadDirectory(uploadDirectory);
+            userLogin.addUploadDirectory(uploadDirectory);
             uploadDirectory.setUserLogin(userLogin);
 
-            userLoginService.save(userLogin);
             uploadDirectoryService.save(uploadDirectory);
+            userLoginService.save(userLogin);
 
             storageService.deleteAll();
             storageService.init();

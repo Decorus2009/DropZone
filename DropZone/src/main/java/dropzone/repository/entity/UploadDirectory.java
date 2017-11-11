@@ -1,5 +1,8 @@
 package dropzone.repository.entity;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import javax.persistence.*;
 import javax.persistence.Entity;
 
@@ -13,9 +16,10 @@ public class UploadDirectory implements RelationEntity {
     @Column(unique = true)
     private String directory;
     // FK
-    @OneToOne(cascade= CascadeType.ALL)
+    @NotFound(action = NotFoundAction.IGNORE)
+    @ManyToOne(cascade= CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumn(name = "login")
-    private UserLogin userLogin;
+    private UserLogin userLogin = new UserLogin();
 
 
     public UploadDirectory() {

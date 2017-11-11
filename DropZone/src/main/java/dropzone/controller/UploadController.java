@@ -6,6 +6,7 @@ import dropzone.repository.entity.UserLogin;
 import dropzone.repository.service.UploadDirectoryService;
 import dropzone.repository.service.UserLoginService;
 import dropzone.storage.StorageService;
+import dropzone.util.FileUtils;
 import dropzone.yandex.YandexDisk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,7 +58,7 @@ public class UploadController {
         because RestClient.uploadFile accepts file only as a local source.
         */
         final Path filePath = storageService.store(file);
-        final String yandexDiskPath = yandexDiskUploadDirectory.getDirectory() + filename;
+        final String yandexDiskPath = FileUtils.buildFilePath(yandexDiskUploadDirectory.getDirectory(), filename);
 
         final String login = userLogin.getLogin();
         final String token = userLogin.getToken();
