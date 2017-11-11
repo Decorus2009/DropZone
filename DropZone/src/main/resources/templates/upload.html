@@ -1,28 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet"
-          th:href="@{/lib/dropzone/dropzone.css}"
-          href="../static/lib/dropzone/dropzone.css"/>
+    <title>Spring MVC + Dropzone.js Example</title>
 
-    <link rel="stylesheet"
-          th:href="@{/lib/dropzone/basic.css}"
-          href="../static/lib/dropzone/basic.css"/>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../lib/bootstrap-3.1.1/css/bootstrap.min.css}"
+          href="../lib/bootstrap-3.1.1/css/bootstrap.min.css"/>
 
-    <script th:src="@{/lib/dropzone/dropzone.js}" src="../static/lib/dropzone/dropzone.js"></script>
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../lib/bootstrap-dialog/css/bootstrap-dialog.min.css}"
+          href="../lib/bootstrap-dialog/css/bootstrap-dialog.min.css"/>
+
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../css/style.css}"
+          href="../css/style.css"/>
+
+    <script type="text/javascript"
+            th:src="@{../lib/jquery/jquery-2.1.1.js}"
+            src="../lib/jquery/jquery-2.1.1.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/bootstrap-3.1.1/js/bootstrap.js}"
+            src="../lib/bootstrap-3.1.1/js/bootstrap.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/bootstrap-dialog/js/bootstrap-dialog.min.js}"
+            src="../lib/bootstrap-dialog/js/bootstrap-dialog.min.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/dropzone/dropzone.js}"
+            src="../static/lib/dropzone`/dropzone.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../js/application.js}"
+            src="../js/application.js"></script>
 </head>
 
 <body>
-<div th:if="${uniqueKeyFound}">
-    <h1>Upload file</h1>
 
-    <div id="dropzone">
-        <form th:action="@{/upload/__${uniqueKey}__}" method="post" enctype="multipart/form-data"
-              class="dropzone" id="yandex-disk-dropzone">
-            <div class="dz-message">Drop files here or click to upload</div>
-            <!--<input type="file" name="file"/><br/><br/>-->
-            <!--<input type="submit" value="Submit"/>-->
-        </form>
+<div th:if="${uniqueKeyFound}">
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">
+                <h3>Spring MVC + Dropzone.js Example</h3>
+            </div>
+            <div class="panel-body">
+                <div>
+                    <form th:action="@{/upload/__${uniqueKey}__}"
+                          method="post"
+                          id="dropzone-form"
+                          class="dropzone"
+                          enctype="multipart/form-data">
+
+                        <div class="dz-default dz-message file-dropzone text-center well col-sm-12">
+                            <span class="glyphicon glyphicon-paperclip"></span>
+                            <span>To attach files, drag and drop here</span>
+                            <br/>
+                            <span>OR</span>
+                            <br/>
+                            <span>Just Click</span>
+                        </div>
+
+                        <!-- this is were the previews should be shown. -->
+                        <div class="dropzone-previews"></div>
+                    </form>
+                    <!--<hr>-->
+                    <button id="upload-button"
+                            class="btn btn-primary">
+                    <span class="glyphicon glyphicon-upload"></span> Upload
+                    </button>
+                    <!--<a class="btn btn-primary pull-right" href="list"> <span-->
+                    <!--class="glyphicon glyphicon-eye-open"></span> View All Uploads-->
+                    <!--</a>-->
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -30,5 +82,6 @@
 <div th:unless="${uniqueKeyFound}">
     <h1 th:text="@{Given unique key __${uniqueKey}__ not found}"></h1>
 </div>
+
 </body>
 </html>

@@ -13,8 +13,10 @@ public class UploadDirectory implements RelationEntity {
     @Id
     @Column(unique = true)
     private String uniqueKey;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String directory;
+    @Column(nullable = false)
+    private Long byte_limit;
     // FK
     @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(cascade= CascadeType.ALL, fetch=FetchType.LAZY)
@@ -45,6 +47,14 @@ public class UploadDirectory implements RelationEntity {
 
     public void setDirectory(final String directory) {
         this.directory = directory;
+    }
+
+    public Long getByteLimit() {
+        return byte_limit;
+    }
+
+    public void setByteLimit(Long byte_limit) {
+        this.byte_limit = byte_limit;
     }
 
     public UserLogin getUserLogin() {

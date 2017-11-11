@@ -4,14 +4,22 @@
 
 <div>
     <h1>Upload result</h1>
+    <h2 th:text="@{__${uploadResultMessage}__}"></h2>
+    <script type="text/javascript">
+        function myFunction() {
+            BootstrapDialog.show({
+                message: 'Hi Apple!'
+            });
+        }
+    </script>
 </div>
 
-<div th:if="${uploadResult}">
-    <h2 th:text="@{You successfully uploaded __${fileName}__ to __${yandexDiskPath}__ directory at your Yandex.Disk}"></h2>
-</div>
-<div th:unless="${uploadResult}">
-    <h2 th:text="@{Unable to upload __${fileName}__ to __${yandexDiskPath}__ directory at your Yandex.Disk}"></h2>
-</div>
+<!--<div th:if="${uploadSuccess}">-->
+    <!--<h2 th:text="@{__${uploadResultMessage}__}"></h2>-->
+<!--</div>-->
+<!--<div th:unless="${uploadSuccess}">-->
+    <!--<h2 th:text="@{Unable to upload __${fileName}__ to __${yandexDiskPath}__ directory at your Yandex.Disk}"></h2>-->
+<!--</div>-->
 
 </body>
 </html>

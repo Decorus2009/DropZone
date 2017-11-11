@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../lib/bootstrap-3.1.1/css/bootstrap.min.css}"
+          href="../lib/bootstrap-3.1.1/css/bootstrap.min.css"/>
+
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../lib/bootstrap-dialog/css/bootstrap-dialog.min.css}"
+          href="../lib/bootstrap-dialog/css/bootstrap-dialog.min.css"/>
+
+    <link rel="stylesheet" type="text/css"
+          th:href="@{../css/style.css}"
+          href="../css/style.css"/>
+
+    <script type="text/javascript"
+            th:src="@{../lib/jquery/jquery-2.1.1.js}"
+            src="../lib/jquery/jquery-2.1.1.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/bootstrap-3.1.1/js/bootstrap.js}"
+            src="../lib/bootstrap-3.1.1/js/bootstrap.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/bootstrap-dialog/js/bootstrap-dialog.min.js}"
+            src="../lib/bootstrap-dialog/js/bootstrap-dialog.min.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/dropzone/dropzone.js}"
+            src="../static/lib/dropzone`/dropzone.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../js/application.js}"
+            src="../js/application.js"></script>
+
+    <script th:inline="javascript" type="text/javascript">
+        function myFunction(name) {
+            BootstrapDialog.show({
+                message: 'Hi, ' + name + '!'
+            });
+        }
+    </script>
+
+</head>
+<body>
+<h1 th:text="@{New attribute found __${attribute}__}"></h1>
+<button onclick="myFunction()" class="btn btn-primary">Run the code</button>
+<!--<button onclick="myFunction()">Click</button>-->
+</body>
+</html>
