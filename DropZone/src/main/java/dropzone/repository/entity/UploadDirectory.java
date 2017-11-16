@@ -5,18 +5,20 @@ import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
+import java.util.Optional;
 
 @Entity
 @Table(name = "upload_directory")
 public class UploadDirectory implements RelationEntity {
 
+    private static long NO_SIZE_LIMIT = Long.MAX_VALUE;
+
     @Id
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String uniqueKey;
     @Column(unique = true, nullable = false)
     private String directory;
-    @Column(nullable = false)
-    private Long byte_limit;
+    private Long byteLimit;
     // FK
     @NotFound(action = NotFoundAction.IGNORE)
     @ManyToOne(cascade= CascadeType.ALL, fetch=FetchType.LAZY)
@@ -50,11 +52,11 @@ public class UploadDirectory implements RelationEntity {
     }
 
     public Long getByteLimit() {
-        return byte_limit;
+        return byteLimit;
     }
 
-    public void setByteLimit(Long byte_limit) {
-        this.byte_limit = byte_limit;
+    public void setByteLimit(Long byteLimit) {
+        this.byteLimit = byteLimit;
     }
 
     public UserLogin getUserLogin() {

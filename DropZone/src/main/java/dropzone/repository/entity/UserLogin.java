@@ -14,7 +14,7 @@ public class UserLogin implements RelationEntity {
     @Column(unique = true, nullable = false)
     private String token;
     @OneToMany(mappedBy = "userLogin")
-    private Set<UploadDirectory> uploadDirectories = new HashSet<>();
+    private Set<UploadDirectory> uploadDirectories;
 
 
     public UserLogin() {
@@ -24,6 +24,10 @@ public class UserLogin implements RelationEntity {
         this.login = login;
         this.token = token;
         this.uploadDirectories = uploadDirectories;
+    }
+
+    public UserLogin(String login, String token) {
+        this(login, token,  new HashSet<>());
     }
 
     public String getLogin() {

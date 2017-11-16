@@ -1,5 +1,7 @@
 package dropzone.yandex;
 
+import dropzone.util.FileUtils;
+
 public class YandexDiskPath {
 
     private final String path;
@@ -19,9 +21,7 @@ public class YandexDiskPath {
     }
 
     public String getFileName() {
-        return path.endsWith("/") && path.length() > 1
-                ? path.substring(0, path.length() - 2).substring(path.lastIndexOf("/") + 1)
-                : path.substring(path.lastIndexOf("/") + 1);
+        return FileUtils.getFileName(path);
     }
 
     public boolean isDirectory() {
@@ -29,9 +29,6 @@ public class YandexDiskPath {
     }
 
     public YandexDiskPath getParent() {
-        return newInstance(path.substring(0, path.endsWith("/") && path.length() > 1
-                        ? path.length() - 2
-                        : path.lastIndexOf("/"))
-                , true);
+        return newInstance(FileUtils.getParent(path), true);
     }
 }

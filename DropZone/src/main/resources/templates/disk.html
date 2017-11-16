@@ -3,7 +3,7 @@
 <body>
 <h2>yandex disk</h2>
 
-<form method="GET" action="/yandexDiskFileList" enctype="multipart/form-data">
+<form method="GET" action="/disk" enctype="multipart/form-data">
     <button th:value="${currentPath.getParent().getPath()}" name="path">..</button>
 </form>
 <table class="table table-bordered">
@@ -13,7 +13,7 @@
     <tr th:each="file : ${files}">
         <td th:text="${file.getFileName()}"></td>
         <td>
-            <form method="GET" action="/yandexDiskFileList" enctype="multipart/form-data">
+            <form method="GET" action="/disk" enctype="multipart/form-data">
                 <button th:value="${file.getPath()}"
                         name="path"
                         th:disabled="${file.isDirectory()} == false">
@@ -22,7 +22,7 @@
             </form>
         </td>
         <td>
-            <form method="GET" action="/yandexDiskFileList/shareDir" enctype="multipart/form-data">
+            <form method="GET" action="/disk/share" enctype="multipart/form-data">
                 <button th:value="${file.getPath()}"
                         name="path"
                         th:disabled="${file.isDirectory()} == false">

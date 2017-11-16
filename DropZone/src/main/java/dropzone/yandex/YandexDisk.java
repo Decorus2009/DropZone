@@ -8,30 +8,27 @@ import com.yandex.disk.rest.exceptions.ServerException;
 import com.yandex.disk.rest.exceptions.ServerIOException;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
+import dropzone.util.DropzoneLog;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class YandexDisk {
 
-    private static final Logger LOG = Logger.getLogger(YandexDisk.class.getSimpleName());
-
-    private static final String DEBUG_LOGIN = "login";
-    private static final String DEBUG_TOKEN = "token";
-
     private final RestClient client;
-
-    public YandexDisk() {
-        this(DEBUG_LOGIN, DEBUG_TOKEN);
-    }
+    private final UserDetails userDetails;
 
     public YandexDisk(final String login, final String token) {
+        userDetails = new UserDetailsImpl(login, token);
         client = new RestClient(new Credentials(login, token));
+    }
+
+    public UserDetails getUserDetails() {
+        return userDetails;
     }
 
     public List<YandexDiskPath> getDiskContent(final String path) throws IOException, ServerIOException {
@@ -52,7 +49,7 @@ public class YandexDisk {
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
-                    LOG.info(filePath.toString() + " upload progress: loaded " + loaded + ", total " + total);
+                    DropzoneLog.info(filePath.toString() + " upload progress: loaded " + loaded + ", total " + total);
                 }
 
                 @Override
