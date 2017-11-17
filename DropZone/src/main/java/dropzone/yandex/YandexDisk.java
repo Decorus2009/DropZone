@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class YandexDisk {
@@ -43,12 +44,13 @@ public class YandexDisk {
                 .collect(Collectors.toList());
     }
 
-    public boolean upload(final Path filePath, final String yandexDiskPath) throws ServerException, IOException {
+    public boolean upload(final Path filePath, final String yandexDiskPath, Map<String, Integer> uploadProgresses, String fileHash) throws ServerException, IOException {
         if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
             final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
+                    uploadProgresses.put(fileHash, (int) (loaded * 100 / total));
                     DropzoneLog.info(filePath.toString() + " upload progress: loaded " + loaded + ", total " + total);
                 }
 

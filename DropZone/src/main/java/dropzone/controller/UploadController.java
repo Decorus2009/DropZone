@@ -12,15 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -30,24 +30,24 @@ public class UploadController {
     private final UploadDirectoryService uploadDirectoryService;
     private final UserLoginService userLoginService;
 
+    // TODO если загружать файл заново, то в ответ сразу улетает значение шкалы прогресса 100
+    private final Map<String, Integer> uploadProgresses;
+
     @Autowired
     public UploadController(UploadDirectoryService uploadDirectoryService, UserLoginService userLoginService,
                             StorageService storageService) {
         this.storageService = storageService;
         this.uploadDirectoryService = uploadDirectoryService;
         this.userLoginService = userLoginService;
+
+        uploadProgresses = new HashMap<>();
     }
 
-/*
-    // для отладки
-    // этот атрибут хорошо распознается в test.html через thymeleaf, можно с ним оперировать
-    @GetMapping("/test/{name}")
-    public String test(@PathVariable final String name, final Model model) {
-        model.addAttribute("name", name);
-        return "test";
+    @PostMapping("/progress")
+    @ResponseBody
+    public String getUploadProgress(@RequestParam("hash") String fileHash) {
+        return String.valueOf(uploadProgresses.get(fileHash));
     }
-*/
-
 
     /**
      * GET method for /upload/{uniqueKey}
@@ -57,7 +57,7 @@ public class UploadController {
      * @return view upload.html
      */
     @GetMapping("/upload/{uniqueKey}")
-    public String singleFileUpload(@PathVariable final String uniqueKey, final Model model) {
+    public String multipleFileUpload(@PathVariable final String uniqueKey, final Model model) {
         final UploadDirectory uploadDirectory = uploadDirectoryService.findBy(uniqueKey);
         model.addAttribute("uniqueKey", uniqueKey);
         model.addAttribute("uniqueKeyFound", uploadDirectory != null);
@@ -73,14 +73,16 @@ public class UploadController {
      * @return redirects to the view uploadStatus.html
      */
     @PostMapping("/upload/{uniqueKey}")
-    public String singleFileUpload(@PathVariable final String uniqueKey, MultipartHttpServletRequest request,
-                                   final RedirectAttributes redirectAttributes) {
+    public String multipleFileUpload(@PathVariable final String uniqueKey, MultipartHttpServletRequest request,
+                                     final RedirectAttributes redirectAttributes, @RequestParam("hash") String fileHash) {
 
         final UploadDirectory yandexDiskUploadDirectory = uploadDirectoryService.findBy(uniqueKey);
 
         // Getting uploaded files from the request object
         for (MultipartFile file : request.getFileMap().values()) {
-            UploadResult uploadResult = uploadTo(yandexDiskUploadDirectory, file);
+            uploadProgresses.put(fileHash, 0);
+
+            UploadResult uploadResult = uploadTo(yandexDiskUploadDirectory, file, fileHash);
 
             redirectAttributes
                     .addFlashAttribute("uploadSuccess", uploadResult.getStatus() == UploadStatus.SUCCESS)
@@ -104,7 +106,7 @@ public class UploadController {
     }
 
 
-    private UploadResult uploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file) {
+    private UploadResult uploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file, String fileHash) {
         if (!hasEnoughSpaceToUploadTo(yandexDiskUploadDirectory, file)) {
             return new UploadResult(UploadStatus.FAILURE, "Not enough space to upload file: " + file.getOriginalFilename() + "\n");
         }
@@ -121,11 +123,15 @@ public class UploadController {
         final String login = userLogin.getLogin();
         final String token = userLogin.getToken();
 
+        // TODO Пока проверять, что общее кол-во байт не больше лимита.
+        // TODO Потом через api диска может получиться запросить размер папки и можно будет при каждой загрузке запрашивать текущий размер (параллельно могут что-то и удалять)
+
         boolean uploadResult;
         try {
-            uploadResult = new YandexDisk(login, token).upload(localFilePath, yandexDiskPath);
+            uploadResult = new YandexDisk(login, token).upload(localFilePath, yandexDiskPath, uploadProgresses, fileHash);
         } catch (ServerException | IOException e) {
             e.printStackTrace();
+            // TODO проверить исключение без интернета  java.net.UnknownHostException
             // TODO handle error
             return new UploadResult(UploadStatus.FAILURE, e.getMessage());
         }

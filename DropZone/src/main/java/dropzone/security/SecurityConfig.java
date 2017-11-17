@@ -13,9 +13,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/upload/**", "/lib/**", "/uploadStatus")
+                .antMatchers("/upload/**", "/lib/**", "/uploadStatus", "/progress")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and().csrf().disable(); // temporary workaround
     }
 }
