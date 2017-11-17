@@ -6,6 +6,7 @@ import dropzone.repository.entity.UserLogin;
 import dropzone.repository.service.UploadDirectoryService;
 import dropzone.repository.service.UserLoginService;
 import dropzone.storage.StorageService;
+import dropzone.util.FileUtils;
 import dropzone.yandex.YandexDisk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,12 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 
 @Controller
@@ -50,7 +49,6 @@ public class UploadController {
         return String.valueOf(uploadProgresses.get(fileHash));
     }
 
-
     /**
      * GET method for /upload/{uniqueKey}
      *
@@ -76,9 +74,8 @@ public class UploadController {
      */
     @PostMapping("/upload/{uniqueKey}")
     public String multipleFileUpload(@PathVariable final String uniqueKey, MultipartHttpServletRequest request,
-                                     final RedirectAttributes redirectAttributes, @RequestParam("hash") String fileHash) {
+                                   final RedirectAttributes redirectAttributes, @RequestParam("hash") String fileHash) {
 
-//        System.out.println("UPLOAD REQUEST START");
         final UploadDirectory yandexDiskUploadDirectory = uploadDirectoryService.findBy(uniqueKey);
 
         // Getting uploaded files from the request object
@@ -95,7 +92,6 @@ public class UploadController {
                 break;
             }
         }
-//        System.out.println("UPLOAD REQUEST END");
         return "redirect:/uploadStatus";
     }
 
@@ -111,9 +107,9 @@ public class UploadController {
 
 
     private UploadResult uploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file, String fileHash) {
-//        if (!hasEnoughSpaceToUploadTo(yandexDiskUploadDirectory, file)) {
-//            return new UploadResult(UploadStatus.FAILURE, "Not enough space to upload file: " + file.getOriginalFilename() + "\n");
-//        }
+        if (!hasEnoughSpaceToUploadTo(yandexDiskUploadDirectory, file)) {
+            return new UploadResult(UploadStatus.FAILURE, "Not enough space to upload file: " + file.getOriginalFilename() + "\n");
+        }
 
         final UserLogin userLogin = yandexDiskUploadDirectory.getUserLogin();
         final String filename = StringUtils.cleanPath(file.getOriginalFilename());
@@ -122,7 +118,7 @@ public class UploadController {
         because RestClient.uploadFile accepts file only as a local source.
         */
         final Path localFilePath = storageService.store(file);
-        final String yandexDiskPath = yandexDiskUploadDirectory.getDirectory() + filename;
+        final String yandexDiskPath = FileUtils.buildFilePath(yandexDiskUploadDirectory.getDirectory(), filename);
 
         final String login = userLogin.getLogin();
         final String token = userLogin.getToken();
@@ -149,6 +145,7 @@ public class UploadController {
     }
 
     private boolean hasEnoughSpaceToUploadTo(UploadDirectory yandexDiskUploadDirectory, MultipartFile file) {
-        return yandexDiskUploadDirectory.getByteLimit() >= file.getSize();
+        final Long byteLimit = yandexDiskUploadDirectory.getByteLimit();
+        return byteLimit == null || byteLimit >= file.getSize();
     }
 }
