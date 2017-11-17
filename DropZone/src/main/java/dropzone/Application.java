@@ -13,6 +13,8 @@ public class Application {
     // добавить лимит в базу, сколько еще можно загрузить
     // выбрать папку, генерится uniqueKey, и в базу
     // дефолтный лимит на папку пока - 1 Гб, проверять, что место есть
+
+    // TODO в CommandLineRunner удалялись временные папки
 //    @Bean
 //    CommandLineRunner init(UserLoginService userLoginService, UploadDirectoryService uploadDirectoryService,
 //                           StorageService storageService) {

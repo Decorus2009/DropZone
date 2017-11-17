@@ -121,19 +121,17 @@ $(document).ready(function () {
                      * Не похоже, что эта штука корректно работает, все равно data == null или undefined пролезает
                      */
                     if (data) {
-                        if (data) {
-                            console.log(data);
+                        console.log(data);
 
-                            /**
-                             * меняем html контент, привязанный к данному файлу (progress bar и текст над ним)
-                             */
-                            $('#progress_' + hashes.get(file)).val(data);
-                            $(`#status_${hashes.get(file)}`).text(data + '%');
+                        /**
+                         * меняем html контент, привязанный к данному файлу (progress bar и текст над ним)
+                         */
+                        $('#progress_' + hashes.get(file)).val(data);
+                        $(`#status_${hashes.get(file)}`).text(data + '%');
 
-                            if (data === '100') {
-                                $(`#status_${hashes.get(file)}`).text('Upload complete');
-                                handle.stop();
-                            }
+                        if (data === '100') {
+                            $(`#status_${hashes.get(file)}`).text('Upload complete');
+                            handle.stop();
                         }
                     }
                 });
