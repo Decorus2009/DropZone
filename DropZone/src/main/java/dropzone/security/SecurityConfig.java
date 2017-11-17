@@ -16,6 +16,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/upload/**", "/lib/**", "/uploadStatus", "/progress")
                 .permitAll()
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and().csrf().disable(); // temporary workaround
     }
 }
