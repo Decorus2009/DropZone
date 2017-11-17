@@ -25,7 +25,7 @@ $(document).ready(function () {
     Dropzone.options.dropzoneForm = {
         autoProcessQueue: true, // true - файлы начнут загружаться автоматически
         uploadMultiple: false, // было true
-        maxFilesize: 1000, // MB
+        maxFilesize: 500, // MB
         parallelUploads: 100,
         maxFiles: 100,
         addRemoveLinks: true,
