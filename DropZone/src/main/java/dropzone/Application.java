@@ -1,7 +1,14 @@
 package dropzone;
 
+import dropzone.repository.entity.UploadDirectory;
+import dropzone.repository.entity.UserLogin;
+import dropzone.repository.service.UploadDirectoryService;
+import dropzone.repository.service.UserLoginService;
+import dropzone.storage.StorageService;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application {

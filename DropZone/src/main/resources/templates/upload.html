@@ -15,6 +15,7 @@
           th:href="@{../css/style.css}"
           href="../css/style.css"/>
 
+
     <script type="text/javascript"
             th:src="@{../lib/jquery/jquery-2.1.1.js}"
             src="../lib/jquery/jquery-2.1.1.js"></script>
@@ -34,9 +35,25 @@
     <script type="text/javascript"
             th:src="@{../js/application.js}"
             src="../js/application.js"></script>
+
+    <script type="text/javascript"
+            th:src="@{../lib/object-hash/dist/object_hash.js}"
+            src="../lib/object-hash/dist/object_hash.js"></script>
+
+    <!--https://github.com/RobertFischer/JQuery-PeriodicalUpdater-->
+    <script type="text/javascript"
+            th:src="@{../lib/JQuery-PeriodicalUpdater/jquery.periodicalupdater.js}"
+            src="../lib/JQuery-PeriodicalUpdater/jquery.periodicalupdater.js"></script>
+    <script type="text/javascript"
+            th:src="@{../lib/JQuery-PeriodicalUpdater/jquery.updater.js}"
+            src="../lib/JQuery-PeriodicalUpdater/jquery.updater.js"></script>
 </head>
 
 <body>
+
+<div>
+    <p></p>
+</div>
 
 <div th:if="${uniqueKeyFound}">
     <div class="container">
@@ -65,10 +82,10 @@
                         <div class="dropzone-previews"></div>
                     </form>
                     <!--<hr>-->
-                    <button id="upload-button"
-                            class="btn btn-primary">
-                    <span class="glyphicon glyphicon-upload"></span> Upload
-                    </button>
+                    <!--<button id="upload-button"-->
+                    <!--class="btn btn-primary">-->
+                    <!--<span class="glyphicon glyphicon-upload"></span> Upload-->
+                    <!--</button>-->
                     <!--<a class="btn btn-primary pull-right" href="list"> <span-->
                     <!--class="glyphicon glyphicon-eye-open"></span> View All Uploads-->
                     <!--</a>-->
