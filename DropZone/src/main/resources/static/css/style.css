@@ -1,56 +1,81 @@
-.container {
-	margin-top: 10px;
-}
+/*.container {*/
+	/*margin-top: 10px;*/
+/*}*/
 
-.dz-filename {
-	font-weight:bold;
-}
+/*.dz-filename {*/
+	/*font-weight:bold;*/
+/*}*/
 
-.dz-success-mark, .dz-error-mark {
-	display: none;
-}
+/*.dz-success-mark, .dz-error-mark {*/
+	/*display: none;*/
+/*}*/
 
-.dz-remove {
-	display: block;
+/*.dz-remove {*/
+	/*display: block;*/
+	/*text-align: center;*/
+/*}*/
+
+/*.dz-details {*/
+	/*border-bottom: 1px solid LightGray;*/
+/*}*/
+
+/*.dz-progress {*/
+	/*margin-top: 15px;*/
+	/*background-color: #f5f5f5;*/
+	/*border-radius: 3px;*/
+/*}*/
+
+/*.dz-upload {*/
+	/*border-radius: 2px;*/
+	/*display: block;*/
+	/*background-color: #2ba6ca;*/
+	/*height: 20px;*/
+	/*width: 0%;*/
+	/*text-align: center;*/
+	/*color: white;*/
+/*}*/
+
+/*.dz-preview {*/
+	/*display: inline-block;*/
+	/*background-color: #fff;*/
+	/*border: 1px dotted #000;*/
+	/*border-radius: 3px;*/
+	/*line-height: 1.5;*/
+	/*margin: 10px 10px 21px;*/
+	/*padding: 5px;*/
+/*}*/
+
+.dropzone {
+	border: 2px dashed #656565;
 	text-align: center;
+	position: relative;
+	/*height: 150px;*/
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 1;
 }
 
-.dz-details {
-	border-bottom: 1px solid LightGray;
+.dropzone:hover {
+	border: 2px dashed #000000;
+	/*outline: LightGreen solid 4px;*/
+
+
+	transition: opacity 0.2s linear;
+	transition-property: opacity;
+	transition-duration: 0.2s;
+	transition-timing-function: linear;
+	transition-delay: initial;
 }
 
-.dz-progress {
-	
-	margin-top: 15px;
-	background-color: #f5f5f5;
-	border-radius: 4px;
+.dropzone .dz-preview.dz-file-preview .dz-image {
+	border-radius: 5px;
 }
 
-.dz-upload { 
-	border-radius: 4px;
-    display: block; 
-    background-color: #428bca; 
-    height: 20px;
-    width: 0%;
-    text-align: center;
-    color: white;
+.dropzone .dz-preview .dz-image {
+	border-radius: 5px;
 }
+/*!*.file-dropzone.drag-over {*!*/
+/*!*outline: LightGreen solid 4px;*!*/
+/*!*opacity: 1;*!*/
+/*!*}*!*/
 
-.dz-preview {
-	display: inline-block;
-	margin: 10px;
-	background-color: #fff;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	line-height: 1.42857;
-	margin-bottom: 20px;
-	padding: 4px;
-}
-
-.file-dropzone {
-	border: 1px dashed #ddd;
-}
-
-.file-dropzone.drag-over {
-	outline: LightGreen solid 4px;
-}

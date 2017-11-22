@@ -12,6 +12,10 @@
           href="../lib/bootstrap-dialog/css/bootstrap-dialog.min.css"/>
 
     <link rel="stylesheet" type="text/css"
+          th:href="@{../lib/dropzone/dropzone.css}"
+          href="../lib/dropzone/dropzone.css"/>
+
+    <link rel="stylesheet" type="text/css"
           th:href="@{../css/style.css}"
           href="../css/style.css"/>
 
@@ -58,29 +62,41 @@
 <div th:if="${uniqueKeyFound}">
     <div class="container">
         <div class="panel panel-default">
-            <div class="panel-heading text-center">
-                <h3>Spring MVC + Dropzone.js Example</h3>
-            </div>
+
             <div class="panel-body">
+                <div class="panel-heading text-center">
+                    <h3>Dropzone</h3>
+                </div>
                 <div>
                     <form th:action="@{/upload/__${uniqueKey}__}"
-                          method="post"
                           id="dropzone-form"
-                          class="dropzone"
-                          enctype="multipart/form-data">
-
-                        <div class="dz-default dz-message file-dropzone text-center well col-sm-12">
+                          class="dropzone dz-clickable">
+                          <!--method="post"-->
+                          <!--enctype="multipart/form-data">-->
+                        <div class="dz-default dz-message">
                             <span class="glyphicon glyphicon-paperclip"></span>
-                            <span>To attach files, drag and drop here</span>
-                            <br/>
-                            <span>OR</span>
-                            <br/>
-                            <span>Just Click</span>
+                            <span>Загрузить файлы</span>
                         </div>
-
-                        <!-- this is were the previews should be shown. -->
-                        <div class="dropzone-previews"></div>
+                        <!--<div class="dropzone-previews"></div> &lt;!&ndash; this is were the previews should be shown. &ndash;&gt;-->
                     </form>
+
+
+
+
+                    <!--<form th:action="@{/upload/__${uniqueKey}__}"-->
+                    <!--method="post"-->
+                    <!--id="dropzone-form"-->
+                    <!--class="dropzone"-->
+                    <!--enctype="multipart/form-data">-->
+
+                    <!--<div class="dz-default dz-message file-dropzone text-center well col-sm-12">-->
+                    <!--<span class="glyphicon glyphicon-paperclip"></span>-->
+                    <!--<span class="myClass">Загрузить файлы</span>-->
+                    <!--</div>-->
+
+                    <!--&lt;!&ndash; this is were the previews should be shown. &ndash;&gt;-->
+                    <!--<div class="dropzone-previews"></div>-->
+                    <!--</form>-->
                     <!--<hr>-->
                     <!--<button id="upload-button"-->
                     <!--class="btn btn-primary">-->
