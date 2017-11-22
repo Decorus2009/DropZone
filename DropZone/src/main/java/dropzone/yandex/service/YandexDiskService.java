@@ -15,7 +15,7 @@ public class YandexDiskService {
         disks.put(yandexDisk.getUserDetails().getLogin(), yandexDisk);
     }
 
-    public YandexDisk getDiskByLogin(final String login) {
+    public YandexDisk getDisk(final String login) {
         return disks.get(login);
     }
 }

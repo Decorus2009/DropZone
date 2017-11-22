@@ -6,11 +6,13 @@ import com.yandex.disk.rest.ResourcesArgs;
 import com.yandex.disk.rest.RestClient;
 import com.yandex.disk.rest.exceptions.ServerException;
 import com.yandex.disk.rest.exceptions.ServerIOException;
+import com.yandex.disk.rest.json.DiskInfo;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
-import dropzone.util.DropzoneLog;
+import com.yandex.disk.rest.json.ResourceList;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -32,7 +34,7 @@ public class YandexDisk {
         return userDetails;
     }
 
-    public List<YandexDiskPath> getDiskContent(final String path) throws IOException, ServerIOException {
+    public List<YandexDiskPath> getFiles(final String path) throws IOException, ServerIOException {
         final Resource resource = client.getResources(new ResourcesArgs.Builder().setPath(path).build());
         if (resource.getResourceList() == null) {
             return Collections.emptyList();
@@ -51,7 +53,6 @@ public class YandexDisk {
                 @Override
                 public void updateProgress(long loaded, long total) {
                     uploadProgresses.put(fileHash, (int) (loaded * 100 / total));
-                    DropzoneLog.info(filePath.toString() + " upload progress: loaded " + loaded + ", total " + total);
                 }
 
                 @Override
@@ -63,6 +64,40 @@ public class YandexDisk {
             return true;
         } else {
             throw new IllegalArgumentException("Invalid file path");
+        }
+    }
+
+    public long getFreeSpace() throws IOException, ServerIOException {
+        final DiskInfo diskInfo = getDiskInfo();
+        return diskInfo.getTotalSpace() - diskInfo.getUsedSpace();
+    }
+
+    private DiskInfo getDiskInfo() throws IOException, ServerIOException {
+        return client.getDiskInfo();
+    }
+
+    public long getResourceSize(final String path) throws IOException, ServerIOException {
+        Resource resource = client.getResources(new ResourcesArgs.Builder().setPath(path).build());
+        return getResourceSize(resource);
+    }
+
+    private long getResourceSize(final Resource resource) {
+        if (resource.isDir()) {
+            ResourceList resourceList = resource.getResourceList();
+            return resourceList == null
+                    ? safeGetResourceSize(resource.getPath().getPath())
+                    : resourceList.getItems().stream().map(this::getResourceSize).mapToLong(Long::longValue).sum();
+        }
+        return resource.getSize();
+    }
+
+    private long safeGetResourceSize(final String path) {
+        try {
+            return getResourceSize(path);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (ServerIOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
