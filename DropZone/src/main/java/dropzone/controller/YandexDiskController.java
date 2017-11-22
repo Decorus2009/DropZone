@@ -29,12 +29,12 @@ public class YandexDiskController {
     private static String ATTRIBUTE_SHARED_URL = "url";
 
     @GetMapping("/disk")
-    public String diskContent(final Principal principal,
-                              final Model model,
-                              @RequestParam(value="path", required=false, defaultValue = "/") final String path)
+    public String listFiles(final Principal principal,
+                            final Model model,
+                            @RequestParam(value="path", required=false, defaultValue = "/") final String path)
             throws IOException, ServerIOException {
-        YandexDisk yandexDisk = yandexDiskService.getDiskByLogin(principal.getName());
-        final List<YandexDiskPath> files = yandexDisk.getDiskContent(path);
+        final YandexDisk yandexDisk = yandexDiskService.getDisk(principal.getName());
+        final List<YandexDiskPath> files = yandexDisk.getFiles(path);
 
         model.addAttribute(ATTRIBUTE_FILES, files);
         model.addAttribute(ATTRIBUTE_CURRENT_PATH, YandexDiskPath.newInstance(path, true));
@@ -45,7 +45,7 @@ public class YandexDiskController {
     public String shareDir(final Principal principal,
                            final Model model,
                            @RequestParam(value="path", required=false, defaultValue = "/") final String path) {
-        YandexDisk yandexDisk = yandexDiskService.getDiskByLogin(principal.getName());
+        final YandexDisk yandexDisk = yandexDiskService.getDisk(principal.getName());
 
         model.addAttribute(
                 ATTRIBUTE_SHARED_URL,
