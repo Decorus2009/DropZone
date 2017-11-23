@@ -45,12 +45,11 @@ $(document).ready(function () {
 
 
                 // Create the remove button
-                const removeButton = Dropzone.createElement("<button>Remove file</button>");
+                const removeButton = Dropzone.createElement("<button class='remove-button'>Remove file</button>");
                 // Capture the Dropzone instance as closure.
                 const _this = this;
                 // Listen to the click event
                 removeButton.addEventListener("click", function(e) {
-                    console.log("CLICKED");
                     // Make sure the button click doesn't submit the form:
                     e.preventDefault();
                     e.stopPropagation();
