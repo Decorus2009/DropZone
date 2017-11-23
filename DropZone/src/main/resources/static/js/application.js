@@ -1,4 +1,7 @@
 $(document).ready(function () {
+
+    let uploadError;
+
     /**
      * https://github.com/puleos/object-hash
      * map: file -> сгенерированный sha1 hash при помощи object-hash
@@ -14,7 +17,7 @@ $(document).ready(function () {
         uploadMultiple: false, // было true
         maxFilesize: 500, // MB
         parallelUploads: 100,
-        maxFiles: 1000,
+        maxFiles: 100,
         addRemoveLinks: false,
         // previewsContainer: ".dropzone-previews",
 
@@ -86,6 +89,7 @@ $(document).ready(function () {
             });
 
             this.on("error", function (file, errorMessage, xhr) {
+                uploadError = true;
                 // $(file.previewElement).find('.dz-upload').css("width", "100%");
                 // $(file.previewElement).find('.dz-upload').text("ERROR");
                 // $(file.previewElement).find('.dz-upload').css("background-color", "red");
@@ -98,16 +102,6 @@ $(document).ready(function () {
                 }
 
                 $(file.previewElement).find('.dz-error-message').text(message);
-
-
-                // errorMessage = xhr.responseText;
-                //
-                // console.log("errror");
-                // console.log(xhr.status);
-                // console.log(xhr.responseText);
-                // console.log(errorMessage);
-                // console.log(xhr);
-                // console.log();
             });
         }
     };
@@ -138,11 +132,15 @@ $(document).ready(function () {
             verbose: 0,        // The level to be logging at: 0 = none; 1 = some; 2 = all
 
         }, function (data, success, xhr, handle) {
-            // console.log(data);
-            // console.log(xhr.status);
-            // console.log(xhr);
-            // console.log();
-
+            /**
+             * Если размер файла превышает установленный в Spring в application.properties
+             * (формально файл уже отправлен и progress = 50),
+             * то начинается бесконечная посылка ajax запросов, которые возвращают null.
+             * Их надо прервать.
+             */
+            if (uploadError) {
+                handle.stop();
+            }
             /**
              * Весь этот асинхронный вызов по посылке запросов на сервер по идее запускается сразу в процессе отправки.
              * На сервере еще может не быть информации о том, что к нему летит такой-то файл
@@ -157,10 +155,7 @@ $(document).ready(function () {
                  */
                 updateUploadProgressOf(file, parseInt(data, 10) + 50);
 
-                // $('#progress_' + hashes.get(file)).val(data);
-                // $(`#status_${hashes.get(file)}`).text(data + '%');
-                //
-                if (data === '50') {
+                if (data == '50') {
                     // $(file.previewElement).find('.dz-upload').text("SUCCESS");
                     handle.stop();
                 }
@@ -171,7 +166,6 @@ $(document).ready(function () {
     function updateUploadProgressOf(file, progress) {
         const hash = hashes.get(file);
         $("#" + hash).attr("style", "width: " + progress + "%");
-        // $("#" + hash).html(progress + "%");
     }
 
     function computeHash(file) {

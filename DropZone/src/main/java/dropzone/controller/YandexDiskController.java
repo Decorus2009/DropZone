@@ -53,6 +53,4 @@ public class YandexDiskController {
         );
         return "sharedUrl";
     }
-
-
 }

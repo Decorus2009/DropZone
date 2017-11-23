@@ -35,6 +35,13 @@ public class UploadDirectory implements RelationEntity {
         this.userLogin = userLogin;
     }
 
+    public UploadDirectory(String uniqueKey, String directory, Long byteLimit, UserLogin userLogin) {
+        this.uniqueKey = uniqueKey;
+        this.directory = directory;
+        this.byteLimit = byteLimit;
+        this.userLogin = userLogin;
+    }
+
     public String getUniqueKey() {
         return uniqueKey;
     }

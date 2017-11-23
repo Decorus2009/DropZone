@@ -29,11 +29,14 @@ public class ShareDirectoryService {
         }
 
         final String uniqueKey = UniqueKeyGenerator.nextKey();
-        final UploadDirectory uploadDirectory = new UploadDirectory(
-                uniqueKey,
-                dirToShare,
-                userLogin
-        );
+        final UploadDirectory uploadDirectory = new UploadDirectory(uniqueKey, dirToShare,
+                1_073_741_824L, userLogin);
+
+        // Владу:
+        // это закомментил, т.к. нужен лимит на загрузку.
+        // Пока пусть будет 1Гб. Потом, будем выбирать лимит руками в выбиралке папок
+//        final UploadDirectory uploadDirectory = new UploadDirectory(uniqueKey, dirToShare, userLogin);
+
 
         userLogin.getUploadDirectories().add(uploadDirectory);
         uploadDirectoryService.save(uploadDirectory);

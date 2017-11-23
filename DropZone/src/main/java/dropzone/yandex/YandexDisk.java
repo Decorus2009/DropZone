@@ -10,6 +10,7 @@ import com.yandex.disk.rest.json.DiskInfo;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
 import com.yandex.disk.rest.json.ResourceList;
+import dropzone.controller.ProgressUpdater;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -17,7 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class YandexDisk {
@@ -46,13 +46,16 @@ public class YandexDisk {
                 .collect(Collectors.toList());
     }
 
-    public boolean upload(final Path filePath, final String yandexDiskPath, Map<String, Integer> uploadProgresses, String fileHash) throws ServerException, IOException {
+    public boolean upload(final Path filePath, final String yandexDiskPath, ProgressUpdater progressUpdater)
+            throws ServerException, IOException {
+
         if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
             final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
-                    uploadProgresses.put(fileHash, (int) (loaded * 100 / total));
+                    // значение от 0 до 50
+                    progressUpdater.updateProgress(((int) (loaded * 100 / total)) / 2);
                 }
 
                 @Override
@@ -66,6 +69,36 @@ public class YandexDisk {
             throw new IllegalArgumentException("Invalid file path");
         }
     }
+
+
+
+
+//    public boolean upload(final Path filePath, final String yandexDiskPath,
+//                          Map<String, Integer> uploadProgresses, String fileHash) throws ServerException, IOException {
+//        if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+//            final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
+//            client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
+//                @Override
+//                public void updateProgress(long loaded, long total) {
+//                    // положить значение от 0 до 50
+//                    uploadProgresses.put(fileHash, ((int) (loaded * 100 / total)) / 2);
+//                }
+//
+//                @Override
+//                public boolean hasCancelled() {
+//                    return false;
+//                }
+//            });
+//
+//            return true;
+//        } else {
+//            throw new IllegalArgumentException("Invalid file path");
+//        }
+//    }
+
+
+
+
 
     public long getFreeSpace() throws IOException, ServerIOException {
         final DiskInfo diskInfo = getDiskInfo();
@@ -81,7 +114,7 @@ public class YandexDisk {
         return getResourceSize(resource);
     }
 
-    private long getResourceSize(final Resource resource) {
+    private long getResourceSize(final Resource resource)   {
         if (resource.isDir()) {
             ResourceList resourceList = resource.getResourceList();
             return resourceList == null

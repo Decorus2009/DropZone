@@ -1,4 +1,4 @@
-package dropzone.controller;
+package dropzone.util;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
