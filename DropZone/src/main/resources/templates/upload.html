@@ -3,38 +3,30 @@
 <head>
     <title>Spring MVC + Dropzone.js Example</title>
 
-    <link rel="stylesheet" type="text/css"
-          th:href="@{../lib/bootstrap-3.1.1/css/bootstrap.min.css}"
-          href="../lib/bootstrap-3.1.1/css/bootstrap.min.css"/>
+    <link rel="stylesheet"
+          type="text/css"
+          href="/webjars/bootstrap/css/bootstrap.min.css"/>
 
-    <link rel="stylesheet" type="text/css"
-          th:href="@{../lib/bootstrap-dialog/css/bootstrap-dialog.min.css}"
-          href="../lib/bootstrap-dialog/css/bootstrap-dialog.min.css"/>
-
-    <link rel="stylesheet" type="text/css"
+    <link rel="stylesheet"
+          type="text/css"
           th:href="@{../lib/dropzone/dropzone.css}"
           href="../lib/dropzone/dropzone.css"/>
 
-    <link rel="stylesheet" type="text/css"
+    <link rel="stylesheet"
+          type="text/css"
           th:href="@{../css/style.css}"
           href="../css/style.css"/>
 
 
     <script type="text/javascript"
-            th:src="@{../lib/jquery/jquery-2.1.1.js}"
-            src="../lib/jquery/jquery-2.1.1.js"></script>
+            src="/webjars/jquery/jquery.min.js"></script>
 
     <script type="text/javascript"
-            th:src="@{../lib/bootstrap-3.1.1/js/bootstrap.js}"
-            src="../lib/bootstrap-3.1.1/js/bootstrap.js"></script>
-
-    <script type="text/javascript"
-            th:src="@{../lib/bootstrap-dialog/js/bootstrap-dialog.min.js}"
-            src="../lib/bootstrap-dialog/js/bootstrap-dialog.min.js"></script>
+            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 
     <script type="text/javascript"
             th:src="@{../lib/dropzone/dropzone.js}"
-            src="../static/lib/dropzone`/dropzone.js"></script>
+            src="../static/lib/dropzone/dropzone.js"></script>
 
     <script type="text/javascript"
             th:src="@{../js/application.js}"
@@ -44,7 +36,7 @@
             th:src="@{../lib/object-hash/dist/object_hash.js}"
             src="../lib/object-hash/dist/object_hash.js"></script>
 
-    <!--https://github.com/RobertFischer/JQuery-PeriodicalUpdater-->
+    <!--PeriodicalUpdater-->
     <script type="text/javascript"
             th:src="@{../lib/JQuery-PeriodicalUpdater/jquery.periodicalupdater.js}"
             src="../lib/JQuery-PeriodicalUpdater/jquery.periodicalupdater.js"></script>
@@ -54,11 +46,6 @@
 </head>
 
 <body>
-
-<div>
-    <p></p>
-</div>
-
 <div th:if="${uniqueKeyFound}">
     <div class="container">
         <div class="panel panel-default">
@@ -71,8 +58,8 @@
                     <form th:action="@{/upload/__${uniqueKey}__}"
                           id="dropzone-form"
                           class="dropzone dz-clickable">
-                          <!--method="post"-->
-                          <!--enctype="multipart/form-data">-->
+                        <!--method="post"-->
+                        <!--enctype="multipart/form-data">-->
                         <div class="dz-default dz-message">
                             <span class="glyphicon glyphicon-paperclip"></span>
                             <span>Загрузить файлы</span>
