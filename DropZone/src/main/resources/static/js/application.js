@@ -43,7 +43,8 @@ $(document).ready(function () {
                 const newContent = '<span id="' + hash + '" class="dz-upload" data-dz-uploadprogress';
                 file.previewElement.innerHTML = file.previewElement.innerHTML.replace(oldContent, newContent);
 
-
+/*
+                // TODO disabled remove button
                 // Create the remove button
                 const removeButton = Dropzone.createElement("<button class='remove-button'>Remove file</button>");
                 // Capture the Dropzone instance as closure.
@@ -63,6 +64,7 @@ $(document).ready(function () {
                 });
                 // Add the button to the file preview element.
                 file.previewElement.appendChild(removeButton);
+*/
             });
 
             this.on("sending", function (file, xhr, formData) {
@@ -89,9 +91,6 @@ $(document).ready(function () {
 
             this.on("error", function (file, errorMessage, xhr) {
                 uploadError = true;
-                // $(file.previewElement).find('.dz-upload').css("width", "100%");
-                // $(file.previewElement).find('.dz-upload').text("ERROR");
-                // $(file.previewElement).find('.dz-upload').css("background-color", "red");
 
                 let message;
                 if (xhr.status === 409 || xhr.status === 413) {
@@ -175,29 +174,6 @@ $(document).ready(function () {
             size: file.size,
             type: file.type,
             date: Date.now()
-        });
-    }
-
-    function showInformationDialog(files, objectArray) {
-
-        var responseContent = "Upload complete";
-
-        for (var i = 0; i < objectArray.length; i++) {
-
-            var infoObject = objectArray[i];
-
-            for (var infoKey in infoObject) {
-                if (infoObject.hasOwnProperty(infoKey)) {
-                    responseContent = responseContent + " " + infoKey + " -> " + infoObject[infoKey] + "<br>";
-                }
-            }
-            responseContent = responseContent + "<hr>";
-        }
-
-        // from the library bootstrap-dialog.min.js
-        BootstrapDialog.show({
-            title: '<b>Server Response</b>',
-            message: responseContent
         });
     }
 });

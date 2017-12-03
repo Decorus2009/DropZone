@@ -1,7 +1,7 @@
 package dropzone.storage;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +18,13 @@ public class FileSystemStorageService implements StorageService {
 
     public FileSystemStorageService() {
         rootLocation = Paths.get("upload_tmp");
+        try {
+            Files.createDirectories(rootLocation);
+        }
+        catch (IOException e) {
+            throw new StorageException("Could not initialize storage", e);
+        }
     }
-
 
     @Override
     public void init() {
@@ -32,7 +37,8 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public Path store(final MultipartFile file) {
+    public Path store(final MultipartFile file) throws StorageException {
+
         final String filename = StringUtils.cleanPath(file.getOriginalFilename());
         try {
             if (file.isEmpty()) {
@@ -40,13 +46,9 @@ public class FileSystemStorageService implements StorageService {
             }
             if (filename.contains("..")) {
                 // This is a security check
-                throw new StorageException(
-                        "Cannot store filesystem with relative path outside current directory "
-                                + filename);
+                throw new StorageException("Cannot store filesystem with relative path outside current directory " + filename);
             }
-            Files.copy(file.getInputStream(), rootLocation.resolve(filename),
-                    StandardCopyOption.REPLACE_EXISTING);
-
+            Files.copy(file.getInputStream(), rootLocation.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
             return Paths.get(rootLocation.toString(), filename);
         } catch (IOException e) {
             throw new StorageException("Failed to store filesystem " + filename, e);
@@ -54,46 +56,20 @@ public class FileSystemStorageService implements StorageService {
     }
 
     @Override
-    public void deleteAll() {
-        FileSystemUtils.deleteRecursively(rootLocation.toFile());
-    }
-
-/*
-    @Override
-    public Stream<Path> loadAll() {
+    public void delete(Path file) throws StorageException {
         try {
-            return Files.walk(this.rootLocation, 1)
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(path -> this.rootLocation.relativize(path));
+            Files.deleteIfExists(file);
+        } catch (IOException e) {
+            throw new StorageException(e);
         }
-        catch (IOException e) {
-            throw new StorageException("Failed to read stored files", e);
-        }
-
     }
 
     @Override
-    public Path load(String filename) {
-        return rootLocation.resolve(filename);
-    }
-
-    @Override
-    public Resource loadAsResource(String filename) {
+    public void deleteAll() throws StorageException {
         try {
-            Path filesystem = load(filename);
-            Resource resource = new UrlResource(filesystem.toUri());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            }
-            else {
-                throw new StorageFileNotFoundException(
-                        "Could not read filesystem: " + filename);
-
-            }
-        }
-        catch (MalformedURLException e) {
-            throw new StorageFileNotFoundException("Could not read filesystem: " + filename, e);
+            FileUtils.cleanDirectory(rootLocation.toFile());
+        } catch (IOException e) {
+            throw new StorageException(e);
         }
     }
-*/
 }
