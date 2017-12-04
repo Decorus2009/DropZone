@@ -1,6 +1,10 @@
 #!/bin/bash
-if [ ! -d upload_tmp ]
+
+UPLOAD_TMP=upload_tmp
+
+if [ ! -d "$UPLOAD_TMP" ]
 then
-    mkdir upload_tmp
+    mkdir "$UPLOAD_TMP"
 fi
+
 mvn package && java -jar target/Dropzone-1.0-SNAPSHOT.jar
