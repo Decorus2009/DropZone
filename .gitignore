@@ -3,3 +3,4 @@
 **/target/
 **/*.iml
 **/upload_tmp
+**.pid
