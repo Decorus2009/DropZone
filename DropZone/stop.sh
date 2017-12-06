@@ -1,7 +1,7 @@
 #!/bin/bash
 mvn clean
 
-kill -9 $(cat ./run_script/app.pid)
+kill -9 $(cat app.pid)
 
 UPLOAD_TMP=upload_tmp
 
@@ -10,4 +10,4 @@ then
     rm -r "$UPLOAD_TMP"
 fi
 
-rm ./run_script/app.pid
+rm app.pid

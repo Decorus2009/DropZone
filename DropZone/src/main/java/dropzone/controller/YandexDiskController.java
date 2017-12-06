@@ -28,6 +28,11 @@ public class YandexDiskController {
     private static String ATTRIBUTE_CURRENT_PATH = "currentPath";
     private static String ATTRIBUTE_SHARED_URL = "url";
 
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/disk";
+    }
+
     @GetMapping("/disk")
     public String listFiles(final Principal principal,
                             final Model model,

@@ -112,7 +112,7 @@ $(document).ready(function () {
          * Оборачивает периодические асинхронные ajax-вызовы
          */
         $.PeriodicalUpdater('/some_path', {
-            url: 'http://localhost:8080/progress',
+            url: 'http://dropzonecsc.xyz/progress',
             cache: false,     // By default, don't allow caching
             method: 'POST',    // method; get or post
             data: {
