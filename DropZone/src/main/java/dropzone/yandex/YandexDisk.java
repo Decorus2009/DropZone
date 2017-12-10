@@ -11,6 +11,7 @@ import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
 import com.yandex.disk.rest.json.ResourceList;
 import dropzone.controller.ProgressUpdater;
+import org.codehaus.jackson.map.util.StdDateFormat;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -42,7 +43,7 @@ public class YandexDisk {
         return resource.getResourceList()
                 .getItems()
                 .stream()
-                .map(file -> YandexDiskPath.newInstance(file.getPath().getPath(), file.isDir()))
+                .map(file -> YandexDiskPath.newInstance(file.getPath().getPath(), file.getModified(), file.isDir()))
                 .collect(Collectors.toList());
     }
 

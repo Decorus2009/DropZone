@@ -45,10 +45,12 @@ public class ShareDirectoryService {
         return uniqueKey;
     }
 
+    public boolean isShared(final UserDetails userDetails, final String path) {
+        return isShared(userLoginService.findBy(userDetails.getLogin()), path);
+    }
+
     private boolean isShared(final UserLogin userLogin, final String path) {
-        return userLogin.getUploadDirectories().stream()
-                .filter(d -> FileUtils.equals(d.getDirectory(), path))
-                .count() > 0;
+        return userLogin != null && userLogin.getUploadDirectories().stream().anyMatch(d -> FileUtils.equals(d.getDirectory(), path));
     }
 
     private String getUniqueKey(final UserLogin userLogin, final String path) {

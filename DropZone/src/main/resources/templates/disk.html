@@ -1,36 +1,138 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<body>
-<h2>yandex disk</h2>
+<head>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/disk.styles.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
 
-<form method="GET" action="/disk" enctype="multipart/form-data">
-    <button th:value="${currentPath.getParent().getPath()}" name="path">..</button>
-</form>
-<table class="table table-bordered">
-    <tr>
-        <th>file name</th>
-    </tr>
-    <tr th:each="file : ${files}">
-        <td th:text="${file.getFileName()}"></td>
-        <td>
-            <form method="GET" action="/disk" enctype="multipart/form-data">
-                <button th:value="${file.getPath()}"
-                        name="path"
-                        th:disabled="${file.isDirectory()} == false">
-                    open
-                </button>
-            </form>
-        </td>
-        <td>
-            <form method="GET" action="/disk/share" enctype="multipart/form-data">
-                <button th:value="${file.getPath()}"
-                        name="path"
-                        th:disabled="${file.isDirectory()} == false">
-                    share
-                </button>
-            </form>
-        </td>
-    </tr>
-</table>
+<body>
+
+<div class="container">
+    <div class="list-group" style="padding: 25px">
+
+        <ol class="breadcrumb">
+            <li th:each="path, iter : ${subPaths}" th:class="${iter.last} ? 'active' : 'breadcrumb-item'">
+                <a th:href="${path}" th:text="${T(dropzone.util.FileUtils).getFileName(path)}" th:class="${iter.last} ? ' path-href disabled-href' : 'path-href'"></a>
+            </li>
+            <a href="/disk" class="pull-right dropzone-title">DropZone</a>
+        </ol>
+
+        <div th:if="${files.isEmpty()}" style="border-bottom: 1px solid #dedede;"></div>
+
+        <a th:each="file : ${files.entrySet()}"
+           th:href="${file.getKey().isDirectory()} ? ${basePath} + ${file.getKey().getPath()} : '#'"
+           class="list-group-item" th:onclick="${file.getKey().isDirectory() ? '' : 'return false'}">
+            <div class="media">
+                <div class="media-left" style="padding-left: 20px;">
+                    <img th:src="${file.getKey().isDirectory()} ? '/images/folder.svg' : '/images/file.svg'"
+                         class="media-object" style="width: 37px"/>
+                </div>
+                <div class="media-body" style="vertical-align: middle">
+                    <h5 class="media-heading" th:text="${file.getKey().getFileName()}"></h5>
+                </div>
+                <div class="media-right" style="padding-right: 40px; vertical-align: middle;">
+                    <div style="white-space: nowrap;" th:text="${file.getKey().getDateModified()}"></div>
+                </div>
+                <div class="media-right" style="padding-right: 20px; vertical-align: middle;">
+                    <img th:id="'img-shared-link-' + ${file.getKey().getFileName()}"
+                         th:src="${file.getValue()} ? '/images/shared-link.svg' : ''"
+                         class="media-object" style="width: 20px"/>
+                </div>
+                <div class="media-right" style="padding-right: 20px; vertical-align: middle;">
+                    <span th:id="'btn-share-' + ${file.getKey().getFileName()}"
+                          th:class="${file.getKey().isDirectory()} ? 'btn btn-outline-success' : 'btn hidden-button'"
+                          style="width: 120px" data-toggle="modal" data-target="#folderDialog" onclick="return false"
+                          th:attr="data-path=${file.getKey().getPath()}, data-filename=${file.getKey().getFileName()}, data-path-shared=${file.getValue()}">
+                        Share
+                    </span>
+                </div>
+            </div>
+        </a>
+
+        <!-- /.modal-dialog -->
+        <div class="modal fade" id="folderDialog">
+            <div class="modal-dialog">
+                <div class="modal-content" style="padding: 10px">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <div class="modal-title">
+                            <img src="/images/folder.svg" class="folder-dialog-title" style="width: 30px;"/>
+                            <span id="dialog-title" class="folder-dialog-title" style="margin-left: 15px;"></span>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="md-form row" style="padding-left: 15px; width: 100%">
+                            <div style="width: 5%; display: inline-block">
+                                <img src="/images/shared-link.svg" class="fa fa-envelope prefix"/>
+                            </div>
+                            <input type="text" id="shared-link" class="form-control-plaintext" readonly="readonly"/>
+                            <label for="shared-link" class="link-label">
+                                <a id="link-create"></a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    $("#folderDialog").on('show.bs.modal', function(e) {
+        var filename = $(e.relatedTarget).data('filename');
+        this.querySelector("#dialog-title").textContent = filename.toString();
+
+        var eCreateLink = this.querySelector("#link-create");
+        this.isPathShared = $(e.relatedTarget).data('path-shared');
+        var path = $(e.relatedTarget).data('path');
+        var dlg = this;
+        var hostname = window.location.origin;
+        if (this.isPathShared) {
+            eCreateLink.textContent = "Copy link";
+            var link = shareDir(path, function(data) {
+                $("#shared-link").val(hostname + '/upload/' + data);
+
+                eCreateLink.onclick = function () {
+                    copyLink();
+                    return false;
+                }
+            });
+        } else {
+            eCreateLink.textContent = "Create a link";
+            $("#shared-link").val('Link is not created');
+
+            eCreateLink.onclick = function () {
+                var link = shareDir(path, function(data) {
+                    dlg.isPathShared = true;
+                    document.getElementById("img-shared-link-" + filename).setAttribute("src", "/images/shared-link.svg");
+                    $(e.relatedTarget).data('path-shared', 'true');
+                    eCreateLink.textContent = "Copy link";
+                    $("#shared-link").val(hostname + '/upload/' + data);
+                    eCreateLink.onclick = function () {
+                        copyLink();
+                        return false;
+                    }
+                });
+                return false;
+            }
+        }
+    });
+
+    function shareDir(path, success) {
+        $.post("/shareDirectory", {
+            path : path
+        }, success);
+    }
+
+    function copyLink() {
+        $("#shared-link").select();
+        document.execCommand('copy');
+    }
+</script>
+
 </body>
 </html>

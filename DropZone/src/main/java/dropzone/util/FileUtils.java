@@ -1,5 +1,10 @@
 package dropzone.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 public class FileUtils {
 
     private FileUtils() {}
@@ -13,18 +18,25 @@ public class FileUtils {
     }
 
     public static String getParent(final String path) {
-        return path.substring(0, path.endsWith("/") && path.length() > 1
-                ? path.length() - 2
-                : path.lastIndexOf("/"));
+        final List<String> parts = Arrays.asList(path.split("/"));
+        return parts.size() > 0 ? String.join("/", parts.subList(0, parts.size() - 1)) : path;
     }
 
     public static String getFileName(final String path) {
-        return path.endsWith("/") && path.length() > 1
-                ? path.substring(0, path.length() - 2).substring(path.lastIndexOf("/") + 1)
-                : path.substring(path.lastIndexOf("/") + 1);
+        final List<String> parts = Arrays.asList(path.split("/"));
+        return parts.size() > 0 ? parts.get(parts.size() - 1) : path;
     }
 
     public static boolean equals(final String pathA, final String pathB) {
         return normalize(pathA).equals(normalize(pathB));
+    }
+
+    public static List<String> subPaths(final String path) {
+        final List<String> subPaths = new ArrayList<>();
+        final List<String> parts = Arrays.asList(path.split("/"));
+        for (int i = 1; i < parts.size(); ++i) {
+            subPaths.add(String.join("/", Collections.unmodifiableList(parts.subList(0, i + 1))));
+        }
+        return subPaths;
     }
 }
