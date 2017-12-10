@@ -6,6 +6,7 @@ import com.yandex.disk.rest.ResourcesArgs;
 import com.yandex.disk.rest.RestClient;
 import com.yandex.disk.rest.exceptions.ServerException;
 import com.yandex.disk.rest.exceptions.ServerIOException;
+import com.yandex.disk.rest.exceptions.http.HttpCodeException;
 import com.yandex.disk.rest.json.DiskInfo;
 import com.yandex.disk.rest.json.Link;
 import com.yandex.disk.rest.json.Resource;
@@ -48,15 +49,14 @@ public class YandexDisk {
     }
 
     public boolean upload(final Path filePath, final String yandexDiskPath, ProgressUpdater progressUpdater)
-            throws ServerException, IOException {
+            throws HttpCodeException, ServerException, IOException {
 
         if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
             final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
             client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
                 @Override
                 public void updateProgress(long loaded, long total) {
-                    // значение от 0 до 50
-                    progressUpdater.updateProgress(((int) (loaded * 100 / total)) / 2);
+                    progressUpdater.updateProgress(loaded, total);
                 }
 
                 @Override
@@ -70,36 +70,6 @@ public class YandexDisk {
             throw new IllegalArgumentException("Invalid file path");
         }
     }
-
-
-
-
-//    public boolean upload(final Path filePath, final String yandexDiskPath,
-//                          Map<String, Integer> uploadProgresses, String fileHash) throws ServerException, IOException {
-//        if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
-//            final Link uploadLink = client.getUploadLink(yandexDiskPath, false);
-//            client.uploadFile(uploadLink, false, filePath.toFile(), new ProgressListener() {
-//                @Override
-//                public void updateProgress(long loaded, long total) {
-//                    // положить значение от 0 до 50
-//                    uploadProgresses.put(fileHash, ((int) (loaded * 100 / total)) / 2);
-//                }
-//
-//                @Override
-//                public boolean hasCancelled() {
-//                    return false;
-//                }
-//            });
-//
-//            return true;
-//        } else {
-//            throw new IllegalArgumentException("Invalid file path");
-//        }
-//    }
-
-
-
-
 
     public long getFreeSpace() throws IOException, ServerIOException {
         final DiskInfo diskInfo = getDiskInfo();

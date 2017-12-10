@@ -2,20 +2,17 @@ package dropzone.storage;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public interface StorageService {
 
     void init();
 
-    Path store(final MultipartFile file);
-/*
-    Stream<Path> loadAll();
+    Path store(final MultipartFile file) throws StorageException;
 
-    Path load(String filename);
+    void delete(Path file) throws StorageException;
 
-    Resource loadAsResource(String filename);
-*/
-
-    void deleteAll();
+    void deleteAll() throws StorageException;
 }

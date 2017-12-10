@@ -1,5 +1,6 @@
 package dropzone.controller;
 
+@FunctionalInterface
 public interface ProgressUpdater {
-    void updateProgress(int progress);
+    void updateProgress(long loaded, long total);
 }

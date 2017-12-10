@@ -39,6 +39,11 @@ public class YandexDiskController {
 
     private static final String BASE_URL = "/disk";
 
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/disk";
+    }
+
     @GetMapping("/disk/**")
     public String disk(final HttpServletRequest request,
                             final Principal principal,
